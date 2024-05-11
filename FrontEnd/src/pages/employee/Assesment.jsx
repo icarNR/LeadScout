@@ -103,9 +103,9 @@ const handleSubmit = async () => {
   console.log('Button clicked!');
   
   // Define the user ID and the answers to send
-  const userId = '002'; // This should be unique for each user
   const answersData = {
-    user_id: userId,
+    user_id: sessionStorage.getItem('user_id'),//sessionStorage.getItem('user_id'),
+    assessed_id: sessionStorage.getItem('assessed_id'),
     answers: selectedOptions
   };
 

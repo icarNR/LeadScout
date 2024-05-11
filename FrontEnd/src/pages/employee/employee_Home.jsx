@@ -19,44 +19,18 @@ const WelcomeText = styled(Typography)(({ theme }) => ({
   fontSize: 50
 }));
 
-const handleButtonClick = () => {
-let userId="002"  
-sessionStorage.setItem('assessmentType', assessmentType);
-sessionStorage.setItem('assessor', userId);
-sessionStorage.setItem('assessee', assessee);
-// Fetch the number of attempts for the current user
-fetch(`${server}/api/users/${userId}/attempts`)
-.then(response => response.json())
-.then(data => {
-  if (true)//(data.attempts === 0) { //change this-----------------------------------------------------------------------
-    // Navigate to the assessment page
-    window.location.href = "/Assesment";
-  else if(!data.requested){
-    // Set the `requested` flag to `true` for the current user and send notifications 
-    fetch(`${server}/api/users/${userId}/request`, { method: 'POST' })
-    .then(() => {
-      setButtonText('Requested'); // Move this inside the .then() block
-    });
-  
-    // Add the username to the notification dictionary for their supervisor
-    // fetch(`${server}/api/supervisors/${supervisorId}/notifications`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ userId: userId })
-    // });
-
-        }
-      })
-      .catch(error => console.error('Error:', error));
-}
 
 const HomePage = ({ name }) => {
   const [buttonText, setButtonText] = useState('Attempt');
   const [buttonColor, setButtonColor] = useState('primary');
-
+  const [requested, setrequested] = useState(false);
+  
   useEffect(() => {
-    let userId="001"  // Fetch the number of attempts for the current user
-
+    let userId="001"
+    sessionStorage.setItem('user_id', userId)
+    sessionStorage.setItem('assessed_id', '002');//----remove
+     //-------remove
+    // Fetch the number of attempts for the current user
     fetch(`${server}/api/users/${userId}/attempts`)
     .then(response => response.json())
     .then(data => {
@@ -64,11 +38,32 @@ const HomePage = ({ name }) => {
         // Change button text and color
         setButtonText('Requested');
         setButtonColor('secondary');
+        setrequested(true)
       }
     })
     .catch(error => console.error('Error:', error));
   }, []);  // The empty array means this useEffect will run once when the component mounts
 
+  const handleButtonClick = () => {
+    if (requested==false)//(data.attempts === 0) { //change this-----------------------------------------------------------------------
+        // Navigate to the assessment page
+        window.location.href = "/Assesment";
+    else {
+        // Set the `requested` flag to `true` for the current user and send notifications 
+        fetch(`${server}/api/users/${userId}/request`, { method: 'POST' })
+        .then(() => {
+          setButtonText('Requested'); 
+          setButtonColor('secondary'); 
+        });
+      
+        // Add the username to the notification dictionary for their supervisor
+        // fetch(`${server}/api/supervisors/${supervisorId}/notifications`, {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ userId: userId })
+        // });
+            }
+    }
 
   const pageContent=(
   <div className={`flex  flex-col lg:flex-row lg:h-full `}>    
