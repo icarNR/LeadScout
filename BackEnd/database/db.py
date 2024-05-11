@@ -2,7 +2,7 @@ from pymongo import MongoClient, errors
 import sys
 from models.user_model import User,Results
 from bson import ObjectId
-
+from models.user_model import User, Results
 
 class DatabaseConnection:
     def __init__(self,collection_name):
@@ -28,7 +28,7 @@ class DatabaseConnection:
         except Exception as e:
             print("An error occurred while inserting the document: ", e)
     
-    def update_document(self, document_id, attribute, new_value):
+    def update_attribute_by_id(self, document_id, attribute, new_value):
         try:
             # Update the attribute in the document
             result = self.collection.update_one(
@@ -42,6 +42,16 @@ class DatabaseConnection:
                 print("No documents matched the filter. Document was not updated.")
         except Exception as e:
             print("An error occurred while updating the document: ", e)
+    
+    def replace_document_by_id(self, document_id, new_document):
+        try:
+            result = self.collection.replace_one({"_id": ObjectId(document_id)}, new_document)
+            if result.modified_count == 1:
+                print("Document replaced successfully.")
+            else:
+                print("No documents matched the filter. Document was not replaced.")
+        except Exception as e:
+            print("An error occurred while replacing the document: ", e)
 
     def get_document_by_id(self, document_id):
         try:
@@ -54,19 +64,19 @@ class DatabaseConnection:
         except Exception as e:
             print("An error occurred while finding the document: ", e)
 
-    def find_document_by_attribute(self, attribute, value):
+    def find_id_by_attribute(self, attribute, value):
         try:
             document = self.collection.find_one({attribute: value})
             if document is not None:
                 print("Document found: ", str(document["_id"]))
-                return str(document["_id"])  # return the _id of the document
+                return str(document["_id"]) # return the the document
             else:
                 print("No documents matched the filter.")
                 return None  # return None if no document is found
         except Exception as e:
             print("An error occurred while finding the document: ", e)
     
-    def delete_document(self, document_id):
+    def delete_document_by_id(self, document_id):
         try:
             result = self.collection.delete_one({"_id": document_id})
             if result.deleted_count == 1:
@@ -86,7 +96,7 @@ class DatabaseConnection:
         except Exception as e:
             print("An error occurred while getting all documents: ", e)
     
-    def get_attribute_value(self, document_id, attribute):
+    def get_attribute_value_by_id(self, document_id, attribute):
         try:
             # Find the document by its _id
             document = self.collection.find_one({"_id": ObjectId(document_id)})
@@ -107,21 +117,21 @@ class DatabaseConnection:
 
 # document_id = document = db.find_document_by_attribute(attribute, value)  # replace with your document's _id
 # value = db.get_attribute_value(document_id, attribute)
-answers=[2] * 44
-user = User(
-    user_id="001",
-    attempts=0,  # replace with actual number of attempts
-    supervisor="002",  # replace with actual supervisor if any
-    requested=False,  # replace with actual requested status
-    answers=answers,
-    results=Results(
-        Openness=0,
-        Conscientiousness=0,
-        Extraversion=0,
-        Agreeableness=0,
-        Neuroticism=0,
-    )
-)
+# answers=[2] * 44
+# user = User(
+#     user_id="001",
+#     attempts=0,  # replace with actual number of attempts
+#     supervisor="002",  # replace with actual supervisor if any
+#     requested=False,  # replace with actual requested status
+#     answers=answers,
+#     results=Results(
+#         Openness=0,
+#         Conscientiousness=0,
+#         Extraversion=0,
+#         Agreeableness=0,
+#         Neuroticism=0,
+#     )
+# )
 # db = DatabaseConnection("users")
 # db.update_document(db.find_document_by_attribute("user_id","001"), "answers", answers)
 
