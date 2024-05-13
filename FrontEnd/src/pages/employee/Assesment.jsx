@@ -79,7 +79,6 @@ function AssessmentPage() {
     const answeredQuestions = selectedOptions.filter(option => option !== 0).length;
     const progressPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
 
-    // Function to navigate to the next page
 // Function to navigate to the next page
 const handleNextPage = () => {
   // Check if all questions on the current page have been answered
@@ -104,7 +103,7 @@ const handleSubmit = async () => {
   console.log('Button clicked!');
   
   // Define the user ID and the answers to send
-  const userId = '001'; // This should be unique for each user
+  const userId = '002'; // This should be unique for each user
   const answersData = {
     user_id: userId,
     answers: selectedOptions

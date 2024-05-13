@@ -20,17 +20,18 @@ const WelcomeText = styled(Typography)(({ theme }) => ({
 }));
 
 const handleButtonClick = () => {
-let userId="001"  // Fetch the number of attempts for the current user
-
+let userId="002"  
+sessionStorage.setItem('assessmentType', assessmentType);
+sessionStorage.setItem('assessor', userId);
+sessionStorage.setItem('assessee', assessee);
+// Fetch the number of attempts for the current user
 fetch(`${server}/api/users/${userId}/attempts`)
 .then(response => response.json())
 .then(data => {
-  if (data.attempts === 0) {
-    
+  if (true)//(data.attempts === 0) { //change this-----------------------------------------------------------------------
     // Navigate to the assessment page
     window.location.href = "/Assesment";
-  } else if(!data.requested){
-
+  else if(!data.requested){
     // Set the `requested` flag to `true` for the current user and send notifications 
     fetch(`${server}/api/users/${userId}/request`, { method: 'POST' })
     .then(() => {
