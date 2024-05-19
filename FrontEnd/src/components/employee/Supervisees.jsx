@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect,useState} from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -19,11 +20,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Margin } from '@mui/icons-material';
 import RecButton from '../common/Button.jsx';
 
-const group = [
-    { id: 1, name: 'John', image: 'john.jpg' },
-    { id: 2, name: 'Alice', image: 'alice.jpg' },
-    { id: 3, name: 'Bob', image: 'bob.jpg' },
-    { id: 4, name: 'Emma', image: 'emma.jpg' }];
 
 // function generate(element) {
 //   return [0, 1, 2].map((value) =>
@@ -41,47 +37,73 @@ const group = [
 //     })
 //   );
 // }
+
 const Demo = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
+  maxHeight: '240px', // Adjust this value as needed
+  overflowY: 'auto', // Enable vertical scrolling
+   
 }));
+
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
     width: theme.spacing(7),
     height: theme.spacing(7),
   }));
-const handleAssessClick = () => {
-    // Action to perform when the button is clicked
-    console.log('Button clicked!');
-  };
-export default function InteractiveList() {
-  const [dense, setDense] = React.useState(false);
-  const [secondary, setSecondary] = React.useState(false);
 
-  return (
-    <Box sx={{ flexGrow: 1, maxWidth: 500 }}>
-        
-          <Demo sx={{background: 'white', borderRadius: '8px', border: '1px solid gray'}}>
+  export default function InteractiveList() {
+    const [dense, setDense] = React.useState(false);
+    const [secondary, setSecondary] = React.useState(false);
+    
+    const [group, setGroup] = useState([]);
+    
+    useEffect(() => {
+      // user_id= sessionStorage.getItem('user_id')
+      fetch('http://localhost:8000/get_users/001')
+        .then(response => response.json())
+        .then(data => setGroup(data))
+        .catch(error => console.error('Error fetching data: ', error));
+    },[]);
+
+    return (
+      <Box sx={{ flexGrow: 1, maxWidth: 500 }}>
+        <Demo sx={{background: 'white', borderRadius: '8px', border: '1px solid gray'}}>
+          {group && group.length > 0 ? (
             <List dense={dense}>
-            {group.map(item => (
-              <ListItem name={item.name}>
-                <ListItemAvatar sx={{ paddingRight: '8px' }}>
-                  <Avatar alt={item.name} src={item.image} />
-                </ListItemAvatar>
-                
-                <ListItemText
-                  sx={{ marginLeft: '20px' }}
-                  primary={item.id}
-                  secondary={secondary ? 'Secondary text' : null}
-                />
-
-                <ListItemText
-                  primary={item.name}
-                  secondary={secondary ? 'Secondary text' : null}
-                />
-                <RecButton text="Assess" onClick={handleAssessClick} />
-              </ListItem>
-            ))}
+              {group.map(item => {
+                const handleAssessClick = () => {
+                  // Action to perform when the button is clicked
+                  sessionStorage.setItem('assessed_id', item.user_id)
+                  console.log("Assessing "+ item.user_id)
+                  window.location.href = "/Assesment";
+                };
+  
+                return (
+                  <ListItem key={item.user_id}>
+                    <ListItemAvatar sx={{ paddingRight: '8px' }}>
+                      <Avatar alt={item.name} src={item.image} />
+                    </ListItemAvatar>
+                    
+                    <ListItemText
+                      sx={{ marginLeft: '20px' }}
+                      primary={item.user_id}
+                      secondary={secondary ? 'Secondary text' : null}
+                    />
+  
+                    <ListItemText
+                      primary={item.name}
+                      secondary={secondary ? 'Secondary text' : null}
+                    />
+                    <RecButton text="Assess" onClick={handleAssessClick} />
+                  </ListItem>
+                );
+              })}
             </List>
-          </Demo>
-    </Box>
-  );
-}
+          ) : (
+            <Typography variant="h6" component="div">
+              //display an image
+            </Typography>
+          )}
+        </Demo>
+      </Box>
+    );
+  }

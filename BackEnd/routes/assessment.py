@@ -12,6 +12,7 @@ class AssessmentAnswers(BaseModel):
     assessed_id: str
     answers: List[Optional[int]]  # Optional because some questions
 
+
 def sum_of_indices(lst, indices):
     return sum(lst[i] for i in indices if i < len(lst))
 
@@ -44,11 +45,11 @@ async def submit_assessment(assessment_answers: AssessmentAnswers):
     #check if supervisor has assessed
     if instance.supervisor_answers and instance.self_answers:
         #calculate traits
-        Extraversion= cal_extro(instance.self_answers)*0.5+ cal_extro(instance.supervisor_answers)*0.5
-        Agreeableness= cal_agree(instance.self_answers)*0.5+ cal_agree(instance.supervisor_answers)*0.5
-        Conscientiousness= cal_consc(instance.self_answers)*0.5+ cal_consc(instance.supervisor_answers)*0.5
-        Neuroticism= cal_neuro(instance.self_answers)*0.5+ cal_neuro(instance.supervisor_answers)*0.5
-        Openness= cal_openn(instance.self_answers)*0.5+ cal_openn(instance.supervisor_answers)*0.5
+        Extraversion= round((cal_extro(instance.self_answers)*0.5+ cal_extro(instance.supervisor_answers)*0.5),2)*100
+        Agreeableness= round((cal_agree(instance.self_answers)*0.5+ cal_agree(instance.supervisor_answers)*0.5),2)*100
+        Conscientiousness= round((cal_consc(instance.self_answers)*0.5+ cal_consc(instance.supervisor_answers)*0.5),2)*100
+        Neuroticism= round((cal_neuro(instance.self_answers)*0.5+ cal_neuro(instance.supervisor_answers)*0.5),2)*100
+        Openness= round((cal_openn(instance.self_answers)*0.5+ cal_openn(instance.supervisor_answers)*0.5),2)*100
         
         # save to results
         db = DatabaseConnection("Results")
@@ -68,10 +69,20 @@ async def submit_assessment(assessment_answers: AssessmentAnswers):
         else:
             db.add_document(instance.model_dump())
             print("new record added :"+docId)
-
-        return {"message": "Answers received", "user_id": assessment_answers.assessed_id}
-
     
+    return "done"
+
+@router.get("/send_results/{userId}")
+async def get_answers(userId :str):
+    db = DatabaseConnection("Results")
+    docId=db.find_id_by_attribute("user_id",userId)
+    document = db.get_document_by_id(docId)
+    document.pop("_id", None)
+    response =Results(**document).model_dump()
+
+    response.pop("user_id", None)
+    print(response)
+    return response
 #----------------------------------------------------------------------------------------------------------
 @router.get("/get_answers")
 async def get_answers():
@@ -89,16 +100,21 @@ async def get_answers():
     else: 
         print("not found")
 
-@router.get("/add_record")
-async def create_document():
+@router.get("/add_record/{userID}/{name}")
+async def create_document(userID,name):
     db = DatabaseConnection("Users")
     results_instance=User(
-        user_id= "002",
+        user_id= userID,
+        name=name,
+        position="Senior Softweare Engineer",
         attempts= 0,
-        supervisor= None,
+        supervisor= "001",
         requested= False,
         self_answers= None,
         supervisor_answers= None
         )
     print(results_instance)
+    existing =db.find_id_by_attribute("user_id",userID)
+    if existing:
+        db.delete_document_by_id(existing)
     db.add_document(results_instance.model_dump()) 

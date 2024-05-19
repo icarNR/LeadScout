@@ -26,9 +26,9 @@ const HomePage = ({ name }) => {
   const [requested, setrequested] = useState(false);
   
   useEffect(() => {
-    let userId="001"
+    let userId="002"
     sessionStorage.setItem('user_id', userId)
-    sessionStorage.setItem('assessed_id', '002');//----remove
+    sessionStorage.setItem('assessed_id', userId);//----remove
      //-------remove
     // Fetch the number of attempts for the current user
     fetch(`${server}/api/users/${userId}/attempts`)

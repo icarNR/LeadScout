@@ -78,7 +78,7 @@ class DatabaseConnection:
     
     def delete_document_by_id(self, document_id):
         try:
-            result = self.collection.delete_one({"_id": document_id})
+            result = self.collection.delete_one({"_id": ObjectId(document_id)})
             if result.deleted_count == 1:
                 print("Document deleted successfully.")
             else:
@@ -113,7 +113,24 @@ class DatabaseConnection:
                 print("No documents matched the filter.")
         except Exception as e:
             print("An error occurred while getting the attribute value: ", e)
- 
+    
+    def get_documents_by_attribute(self, attribute, value, fields):
+        try:    
+            query = {attribute: value}
+            projection = {field: 1 for field in fields}
+            projection["_id"] = 0  # Exclude _id from the result
+            documents = self.collection.find(query, projection)
+            count = self.collection.count_documents(query)
+            # Check if any documents were found
+            if documents is not None:
+                    print(f"Found {count} documents.")
+                    return list(documents)
+            else:
+                    print("No documents matched the filter.")
+                    return None  # return None if no documents are found
+        except Exception as e:
+            print("An error occurred while getting the documents: ", e)
+
 
 # document_id = document = db.find_document_by_attribute(attribute, value)  # replace with your document's _id
 # value = db.get_attribute_value(document_id, attribute)

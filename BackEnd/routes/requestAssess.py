@@ -1,6 +1,9 @@
 from fastapi import FastAPI,APIRouter
 from pydantic import BaseModel
 from datetime import datetime
+from database.db import DatabaseConnection
+from models.user_model import User, Results
+
 
 router = APIRouter()
 # Call the function to set up CORS
@@ -74,3 +77,10 @@ async def set_request(user_id: str):
 @router.get("/get_supervisors/")
 async def get_supervisors():
     return supervisors
+
+@router.get("/get_users/{userId}/")
+async def get_users(userId: str):
+    db = DatabaseConnection("Users")
+    users = db.get_documents_by_attribute("supervisor", userId,["user_id","name"])
+    print(users)
+    return users

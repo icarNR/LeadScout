@@ -57,7 +57,13 @@ function AssessmentPage() {
   "You are easily distracted",
   "You are sophisticated in art, music, or literature"
 ];
-
+  const [results, setResults] = useState({
+    Extraversion: 0,
+    Agreeableness: 0,
+    Conscientiousness: 0,
+    Neuroticism: 0,
+    Openness: 0
+  });
   // State for current page
   const [currentPage, setCurrentPage] = useState(1);
   // State to keep track of selected options for each question
@@ -119,6 +125,7 @@ const handleSubmit = async () => {
       body: JSON.stringify(answersData)
     });
     const data = await response.json();
+    setResults(data);
     console.log(data);
   } catch (error) {
     console.error('Error submitting assessment:', error);

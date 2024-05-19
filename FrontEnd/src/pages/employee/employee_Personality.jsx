@@ -8,6 +8,16 @@ import { VscArrowRight } from "react-icons/vsc";
 import image1 from '../../assets/Scene-1-16-1024x575.jpg'; // Adjust the file extension based on the actual image type
 import axios from 'axios'; // Make sure to install this package
 
+const data = [
+  { imageSrc: image1, bodyText1: 'In literary theory, a text is any object that can be "read", whether this object is a work of literature, a street sign, an arrangement of buildings on a city block, or styles of clothing. It is a set of signs that is available to be reconstructed by a reader if sufficient interpretants are available.', bodyText2: 'Body text 3' },
+  { imageSrc: 'image2.jpg', bodyText1: 'Body text 2', bodyText2: 'Body text 2'  },
+  { imageSrc: 'image3.jpg', bodyText1: 'Body text 3', bodyText2: 'Body text 1'  },
+  // Add more data as needed
+];
+
+
+
+
 
 
 const Div1 = ({ imageSrc, bodyText1, bodyText2 }) => (
@@ -27,42 +37,43 @@ const Div1 = ({ imageSrc, bodyText1, bodyText2 }) => (
 
 
 const PersonalityPage = () => {
-  const data = [
-    { imageSrc: image1, bodyText1: 'In literary theory, a text is any object that can be "read", whether this object is a work of literature, a street sign, an arrangement of buildings on a city block, or styles of clothing. It is a set of signs that is available to be reconstructed by a reader if sufficient interpretants are available.', bodyText2: 'Body text 3' },
-    { imageSrc: 'image2.jpg', bodyText1: 'Body text 2', bodyText2: 'Body text 2'  },
-    { imageSrc: 'image3.jpg', bodyText1: 'Body text 3', bodyText2: 'Body text 1'  },
-    // Add more data as needed
-  ];
-
-  const [results, setResults] = useState({
-    Extraversion: 0,
-    Agreeableness: 0,
-    Conscientiousness: 0,
-    Neuroticism: 0,
-    Openness: 0
-  });
 
   useEffect(() => {
-    const userId = '001'; // Replace with the actual user ID
-    axios.get(`http://localhost:8000/send_results/${userId}`)
-      .then(response => {
-        setResults(response.data);
+    const userId = sessionStorage.getItem('user_id'); // Replace with the actual user ID
+    fetch(`http://localhost:8000/send_results/${userId}`)
+      .then(response => response.json())
+      .then(data => {
+        const adjustedResults = {
+          Extraversion: data.extraversion,
+          Agreeableness: data.agreeableness,
+          Conscientiousness: data.conscientiousness,
+          Neuroticism: data.neuroticism,
+          Openness: data.openness
+        };
+        setResults(adjustedResults);
       })
       .catch(error => {
         console.error('Error fetching data: ', error);
       });
-  }, []);
+    }, []);
+    
+    const [results, setResults] = useState({
+      Extraversion: 0,
+      Agreeableness: 0,
+      Conscientiousness: 0,
+      Neuroticism: 0,
+      Openness: 0
+    });
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handlePrev = () => {
-    setCurrentIndex(prevIndex => (prevIndex > 0 ? prevIndex - 1 : 0));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex(prevIndex => (prevIndex < data.length - 1 ? prevIndex + 1 : prevIndex));
-  };
-
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const handlePrev = () => {
+      setCurrentIndex(prevIndex => (prevIndex > 0 ? prevIndex - 1 : 0));
+    };
+    
+    const handleNext = () => {
+      setCurrentIndex(prevIndex => (prevIndex < data.length - 1 ? prevIndex + 1 : prevIndex));
+    };
+    
     const pageContent=(
     <div className={`flex  flex-col h-full p-10`}>    
     <div>
