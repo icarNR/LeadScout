@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, List
 class Results(BaseModel):
     Openness: float
@@ -14,3 +14,11 @@ class User(BaseModel):
     requested: bool
     answers: Optional[List[int]]
     results: Optional[Results]
+
+class User(BaseModel):
+    name: str
+    email: EmailStr
+    employee_id: str
+    hashed_password: str
+class UserInDB(User):
+ id: int

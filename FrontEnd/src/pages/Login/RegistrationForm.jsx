@@ -1,7 +1,7 @@
 import React from 'react';
-import '../style/RegistrationForm.css'; 
-import LeftPart from '../components/Registration/left-part';
-import RightPart from '../components/Registration/right-part';
+import '../../style/RegistrationForm.css'; 
+import LeftPart from '../../components/Registration/left-part';
+import RightPart from '../../components/Registration/right-part';
 
 function RegistrationForm() {
   return (

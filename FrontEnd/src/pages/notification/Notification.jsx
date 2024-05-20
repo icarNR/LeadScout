@@ -190,11 +190,11 @@
 
 
 import React, { useState } from 'react';
-import PageLayout from '../layouts/MainLayout';
+import PageLayout from '../../layouts/ELayout';
 import { VscArrowLeft, VscArrowRight } from "react-icons/vsc";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import "../style/Notification.css";
+import "../../style/Notification.css";
 
 const columns = [
   { field: "picture", headerName: "", width: 60, renderCell: (params) => <img src={params.row.picture} alt="profile" /> },

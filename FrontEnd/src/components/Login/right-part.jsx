@@ -202,10 +202,10 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Button from '../common/Button';
+import Button from '../../components/common/Button';
 import axios from 'axios'; // Import axios
-import sms from '../../icons/sms.png';
-import lockIcon from '../../icons/lockIcon.svg';
+import sms from '../../assets/icons/sms.png';
+import lockIcon from '../../assets/icons/lockIcon.svg';
 
 function RightPart() {
     const [email, setEmail] = useState('');

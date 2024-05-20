@@ -1,5 +1,5 @@
 import React from 'react';
-import firstImage from '../../icons/firstImage.png';
+import firstImage from '../../assets/icons/firstImage.png';
 
 function LeftPart() {
   return (

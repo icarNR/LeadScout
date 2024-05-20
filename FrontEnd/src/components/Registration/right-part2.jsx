@@ -115,7 +115,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../common/Button';
-import lockIcon from '../../icons/lockIcon.svg';
+import lockIcon from '../../assets/icons/lockIcon.svg';
 
 function RightPart() {
     const [password, setPassword] = useState('');

@@ -1,8 +1,8 @@
 
 
 import React from 'react';
-import sms from '../../icons/sms.png'; // Assuming icons folder is one level above
-import lockIcon from '../../icons/lockIcon.svg'; // Assuming icons folder is one level above
+import sms from '../../assets/icons/sms.png'; // Assuming icons folder is one level above
+import lockIcon from '../../assets/icons/lockIcon.svg'; // Assuming icons folder is one level above
 import { Link } from 'react-router-dom';
 import Button  from '../common/Button';
 

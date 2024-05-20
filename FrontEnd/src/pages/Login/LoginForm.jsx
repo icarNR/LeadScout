@@ -1,8 +1,9 @@
 
 import React from 'react';
-import '../style/LoginForm.css';
-import LeftPart from '../components/Login/left-part'; 
-import RightPart from '../components/Login/right-part';
+import   '../../style/LoginForm.css';
+import LeftPart from '../../components/Login/left-part'; 
+import RightPart from '../../components/Login/right-part';
+
 
 function LoginForm() {
   return (
