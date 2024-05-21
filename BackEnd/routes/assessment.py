@@ -45,13 +45,14 @@ async def submit_assessment(assessment_answers: AssessmentAnswers):
 
     #check if supervisor has assessed
     if instance.supervisor_answers and instance.self_answers:
-        #calculate traits
+        print('both have assesed')
         Extraversion= round((cal_extro(instance.self_answers)*0.5+ cal_extro(instance.supervisor_answers)*0.5),2)*100
         Agreeableness= round((cal_agree(instance.self_answers)*0.5+ cal_agree(instance.supervisor_answers)*0.5),2)*100
         Conscientiousness= round((cal_consc(instance.self_answers)*0.5+ cal_consc(instance.supervisor_answers)*0.5),2)*100
         Neuroticism= round((cal_neuro(instance.self_answers)*0.5+ cal_neuro(instance.supervisor_answers)*0.5),2)*100
         Openness= round((cal_openn(instance.self_answers)*0.5+ cal_openn(instance.supervisor_answers)*0.5),2)*100
     elif instance.self_answers:
+        print('both have not assesed')
         Extraversion= round(cal_extro(instance.self_answers)*0.5,2)*100
         Agreeableness= round(cal_agree(instance.self_answers)*0.5,2)*100
         Conscientiousness= round(cal_consc(instance.self_answers)*0.5,2)*100
@@ -59,23 +60,23 @@ async def submit_assessment(assessment_answers: AssessmentAnswers):
         Openness= round(cal_openn(instance.self_answers)*0.5,2)*100
          
         # save to results
-        db = DatabaseConnection("Results")
-        docId=db.find_id_by_attribute("user_id",assessment_answers.assessed_id)
-        instance=Results(
-                user_id= assessment_answers.assessed_id,
-                extraversion=Extraversion,
-                agreeableness=Agreeableness,
-                conscientiousness=Conscientiousness,
-                neuroticism=Neuroticism,
-                openness=Openness
+    db = DatabaseConnection("Results")
+    docId=db.find_id_by_attribute("user_id",assessment_answers.assessed_id)
+    instance=Results(
+            user_id= assessment_answers.assessed_id,  
+            extraversion=Extraversion,
+            agreeableness=Agreeableness,
+            conscientiousness=Conscientiousness,             
+            neuroticism=Neuroticism,
+            openness=Openness
                 )
-        if docId:
-            print("well doc is here")
-            db.replace_document_by_id(docId, instance.model_dump())
-            print("record updated :"+docId)
-        else:
-            db.add_document(instance.model_dump())
-            print("new record added :"+docId)
+    if docId:
+        print("well doc is here") 
+        db.replace_document_by_id(docId, instance.model_dump())
+        print("record updated :"+docId)
+    else:
+        db.add_document(instance.model_dump())
+        print("new record added :"+docId)
     
     return "done"
 
@@ -87,7 +88,6 @@ async def get_answers(userId :str):
         document = db.get_document_by_id(docId)
         document.pop("_id", None)
         response =Results(**document).model_dump()
-
         response.pop("user_id", None)
         print(response)
         return response
@@ -100,9 +100,10 @@ async def get_dual_assessment(user_id: str):
         document = db.get_document_by_id(docId)
         document.pop("_id", None)
         instance= User(**document)
-        dual_assessment = False 
+        dual_assessment = False
         if(instance.supervisor_answers): #check if superviser assessed
             dual_assessment = True 
+
     return {"dual_assessment": dual_assessment}
 #----------------------------------------------------------------------------------------------------------
 @router.get("/get_answers")

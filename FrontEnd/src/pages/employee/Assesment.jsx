@@ -127,14 +127,13 @@ const handleSubmit = async () => {
     const data = await response.json();
     setResults(data);
     console.log(data);
+    
   } catch (error) {
     console.error('Error submitting assessment:', error);
   }
-  console.log(answersData.assessed_id)
-  console.log(answersData.user_id)
   if (answersData.user_id==answersData.assessed_id){
-      window.location.href = "/employee_Personality";
-    }
+    window.location.href = "/employee_Personality";
+  }
   else
     window.location.href = "/";
 };

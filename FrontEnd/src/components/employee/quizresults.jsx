@@ -16,8 +16,8 @@ function Results({Openness, Conscientiousness, Extraversion, Agreeableness, Neur
       {/* Map through the progress bar data and render a progress bar for each */}
       {progressBarsData.map((item, index) => (
           <div key={index} className='flex flex-row max-w-96 p-1 border-black'>
-          <span className='min-w-32 text-xs flex-shrink-1'>{item.name}</span>
-          <div className={`flex-grow w-full `}><CustomizedProgressBars progress={item.percentage} color={item.color} /></div></div>
+          <span className='min-w-[130px] text-sm flex-shrink-1 '>{item.name}</span>
+          <div className={`flex-grow w-full  `}><CustomizedProgressBars progress={item.percentage} color={item.color} /></div></div>
       ))}
     </div>
   );
