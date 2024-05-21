@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter
 from pydantic import BaseModel
 from datetime import datetime
 from database.db import DatabaseConnection
-from models.user_model import User, Results
+from models.user_model import User, Results, Notification
 
 
 router = APIRouter()
@@ -18,57 +18,31 @@ class Supervisor(BaseModel):
     id: str
     notifications: list = []
 
-users = {
-    "001": {
-    "attempts":0,
-    "requested": False,
-    "supervisor": "002"    },
-    "002": {
-    "attempts":1,
-    "requested": False }
-    }
-
-supervisors = {
-    "002": {
-        "supervisees": ["001"],
-        "notifications": {
-            "1": {
-                "user": "001",
-                "user": "2",
-                "date":'2',
-                "time":'2',
-                "assesment_req": False
-            }
-        }
-    }
-}
-
 
 # Get the number of attempts and  requested flag for a user
 @router.get("/api/users/{user_id}/attempts")
 async def get_attempts(user_id: str):
-    user = users.get(user_id)
-    return {"attempts": user["attempts"], "requested": user["requested"]}
+    db=DatabaseConnection("users")
+    documentID=db.find_id_by_attribute("user_id",user_id)
+    return {"attempts": db.get_attribute_value_by_id(documentID,"attempts"), "requested": db.get_attribute_value_by_id(documentID,"requested")}
 
 # Set the `requested` flag to `true` for a user & send notifications
 @router.post("/api/users/{user_id}/request")
 async def set_request(user_id: str):
-    user = users.get(user_id)
-    if user:
-        user["requested"] = True
-        supervisor = supervisors.get(users.get(user_id)["supervisor"])
+    db=DatabaseConnection("users")
+    document_id=db.find_id_by_attribute("user_id",user_id)
+
+    if document_id:
+        db.update_attribute_by_id(document_id,"requested",True)
+        supervisor = db.get_attribute_value_by_id(document_id,"supervisor")
     if supervisor:
-        current_time = datetime.now()
-        date_str = current_time.strftime("%Y:%m:%d")
-        time_str = current_time.strftime("%H:%M:%S")
-        unique_id = user_id + date_str + time_str
-        new_notification = {
-            "user": user_id,
-            "date":date_str,
-            "time":time_str,
-            "assesment_req": True
-        }
-        supervisor["notifications"][unique_id] = new_notification
+        instance = Notification(
+            user_id= user_id,
+            supervisor= supervisor,
+            date= datetime.now(),
+            ntype= "self_request" 
+            )
+        db.add_document(instance.model_dump())
         return {"success": True}
     else:
         return {"success": False}
@@ -76,6 +50,8 @@ async def set_request(user_id: str):
 
 @router.get("/get_supervisors/")
 async def get_supervisors():
+    db=DatabaseConnection("users")
+    document_id=db.find_id_by_attribute("user_id",user_id)
     return supervisors
 
 @router.get("/get_users/{userId}/")

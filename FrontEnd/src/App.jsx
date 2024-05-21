@@ -11,6 +11,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 //styleOverrides
 export const theme = createTheme({
+  typography: {
+    fontSize: 12, // Adjust as needed
+  },
   palette: {
     primary: {
       main: '#00695c',

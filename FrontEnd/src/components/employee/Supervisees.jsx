@@ -40,7 +40,7 @@ import RecButton from '../common/Button.jsx';
 
 const Demo = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  maxHeight: '240px', // Adjust this value as needed
+  maxHeight: '242px', // Adjust this value as needed
   overflowY: 'auto', // Enable vertical scrolling
    
 }));
@@ -57,12 +57,23 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
     const [group, setGroup] = useState([]);
     
     useEffect(() => {
-      // user_id= sessionStorage.getItem('user_id')
-      fetch('http://localhost:8000/get_users/001')
-        .then(response => response.json())
-        .then(data => setGroup(data))
-        .catch(error => console.error('Error fetching data: ', error));
-    },[]);
+      // Try to get the supervisees list from the session storage
+      const storedGroup = sessionStorage.getItem('supervisees');
+      const userID = sessionStorage.getItem('user_id');
+      // If the supervisees list is in the session storage, use it
+      if (storedGroup) {
+        setGroup(JSON.parse(storedGroup));
+        //If the supervisees list is not in the session storage, fetch it from the database
+        fetch(`http://localhost:8000/get_users/${userID}`)
+          .then(response => response.json())
+          .then(data => {
+            // Save the supervisees list in the session storage for future use
+            sessionStorage.setItem('supervisees', JSON.stringify(data));
+            setGroup(data);
+          })
+          .catch(error => console.error('Error fetching data: ', error));
+      }
+    }, []);
 
     return (
       <Box sx={{ flexGrow: 1, maxWidth: 500 }}>

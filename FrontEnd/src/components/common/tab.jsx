@@ -34,42 +34,32 @@ CustomTabPanel.propTypes = {
 };
 
 export default function BasicTabs({ panelcontent1, panelcontent2 }) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
+    console.log(newValue);
   };
 
   return (
-    <Box className={'sd:w-550'} sx={{  overflow: 'hidden' ,flex:'column'}}>
-      <Box sx={{ width: 'fit-content', border: 1, borderColor: 'divider', borderRadius: 2 }}>
-      <ThemeProvider theme={theme}><Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          
-          TabIndicatorProps={{
-            style: {
-              backgroundColor: 'lightgreen', // Background color of the selected tab
-              height:4, // Remove the default underline
-              borderRadius: 3, // Apply border radius to the selected tab
-              width:71,
-              marginLeft: 11
-             ,
-            },
-          }}
-        >
-          <Tab label="Me" />
-
-          <Tab label="Others" />
-        </Tabs></ThemeProvider>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-      {panelcontent1}  
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-      {panelcontent2}
-      </CustomTabPanel>
-    </Box>
+    <div className="flex flex-col overflow-hidden items-center" >
+      <div className={`flex border bg-gray-200 items-center border rounded-[5px]`}>     
+        <button
+          onClick={() => handleChange(0)}
+          className={`px-2 py-1  ${value === 0 ? 'bg-white' : 'bg-gray-200'}  w-[90px] border rounded-[5px]`}>
+          Me
+        </button>
+        <button
+            onClick={() => handleChange(1)}
+            className={`px-2 py-1 ${value === 1 ? 'bg-white' : 'bg-gray-200'} w-[90px] border rounded-[5px]`}>
+            Others 
+        </button>
+      </div>
+      <div className="w-[410px]"> 
+        {value === 0 && <div className="p-3">{panelcontent1}</div>}
+        {value === 1 && <div className="p-3">{panelcontent2}</div>}
+      </div>
+    </div>
   );
 }
+  

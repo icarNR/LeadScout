@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import PageLayout from '../../layouts/EPLayout';
+import image1 from '../../assets/employee_home.jpeg'; // Adjust the file extension based on the actual image type
 
 const server = 'http://localhost:8000';
 
@@ -26,7 +27,7 @@ const HomePage = ({ name }) => {
   const [requested, setrequested] = useState(false);
   
   useEffect(() => {
-    let userId="002"
+    let userId="001"//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   user_id
     sessionStorage.setItem('user_id', userId)
     sessionStorage.setItem('assessed_id', userId);//----remove
      //-------remove
@@ -81,7 +82,7 @@ const HomePage = ({ name }) => {
         </div>
 
         {/* Right Part */}
-        <div className="bg-cover bg-center flex flex-col items-center justify-center flex-grow gap-7 h-screen lg:h-full" style={{ backgroundImage: 'url("https://www.muskokapaint.com/cdn/shop/products/A3C1E3_800x.png?v=16075618150")' }}>
+        <div className="bg-cover bg-center flex flex-col items-center justify-center flex-grow gap-7 h-screen lg:h-full" style={{ backgroundImage: `url(${image1})`}}>
             <div>
               <div variant="body1" className="text-3xl font-bold text-center">
                 BE HONEST!

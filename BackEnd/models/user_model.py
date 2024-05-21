@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, List
+from datetime import datetime
+
 class Results(BaseModel):
     user_id: str
     openness: float
@@ -26,5 +28,10 @@ class Supervisor(BaseModel):
     requested: bool
     self_answers: Optional[List[int]]
     supervisor_answers: Optional[List[int]]
-    
+
+class Notification(BaseModel):
+    user_id: str
+    supervisor: Optional[str]
+    date: datetime
+    ntype: str 
     

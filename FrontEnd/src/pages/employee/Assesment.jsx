@@ -107,10 +107,10 @@ const handleNextPage = () => {
 // Function to handle submit click
 const handleSubmit = async () => {
   console.log('Button clicked!');
-  
+ 
   // Define the user ID and the answers to send
   const answersData = {
-    user_id: sessionStorage.getItem('user_id'),//sessionStorage.getItem('user_id'),
+    user_id: sessionStorage.getItem('user_id'), //sessionStorage.getItem('user_id'),
     assessed_id: sessionStorage.getItem('assessed_id'),
     answers: selectedOptions
   };
@@ -130,7 +130,13 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error submitting assessment:', error);
   }
-  //window.location.href = "/employee_Personality";
+  console.log(answersData.assessed_id)
+  console.log(answersData.user_id)
+  if (answersData.user_id==answersData.assessed_id){
+      window.location.href = "/employee_Personality";
+    }
+  else
+    window.location.href = "/";
 };
 
 
