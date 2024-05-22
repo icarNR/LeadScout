@@ -29,10 +29,15 @@ export default function CustomizedProgressBars({ progress, color }) {
     setCurrentProgress(progress);
   }, [progress]);
 
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-       <ThemeProvider theme={theme}><BorderLinearProgress variant="determinate" value={currentProgress} colorr={color} sx={{ flex: 1 }} /></ThemeProvider>
-      <Typography className='text-xs' variant="body3" sx={{ ml: 1 }}>{`${currentProgress}%`}</Typography>
-    </Box>
-  );
+ return (
+  <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+    <ThemeProvider theme={theme}>
+      <BorderLinearProgress variant="determinate" value={currentProgress} colorr={color} sx={{ flex: 1 }} />
+    </ThemeProvider>
+    <Typography className='text-xs' variant="body3" sx={{ pl: 1, lineHeight: '1rem', margin: 0 }}>
+      {`${currentProgress}%`}
+    </Typography>
+  </Box>
+);
+
 }

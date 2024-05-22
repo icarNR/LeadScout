@@ -29,8 +29,8 @@ const HomePage = ({ name }) => {
   useEffect(() => {
     let userId="001"//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   user_id
     sessionStorage.setItem('user_id', userId)
-    sessionStorage.setItem('assessed_id', userId);//----remove
-     //-------remove
+    sessionStorage.setItem('assessed_id', userId);
+
     // Fetch the number of attempts for the current user
     fetch(`${server}/api/users/${userId}/attempts`)
     .then(response => response.json())

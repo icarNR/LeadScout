@@ -44,64 +44,46 @@ const PersonalityPage = () => {
     Openness: 0
   });
 
-  const [dualAssessment,setdualAssessment] = useState(false);
+  const [dualAssessment,setdualAssessment] = useState(true);
+
   useEffect(() => {
     const userId = sessionStorage.getItem('user_id'); 
-    // check dualAssessment completed
-    fetch(`http://localhost:8000/api/dual_assessment/${userId}`)
-    .then(response => response.json())
-    .then(data => {
-      setdualAssessment(data.dual_assessment)
-    })
-    .catch(error => {
-      console.error('Error fetching data: ', error);
-    });
-
-
-    // Try to get the results from the session storage
     const storedResults = sessionStorage.getItem('results');
-    if (storedResults) {
-      // If the results are in the session storage, use them
-      //setResults(JSON.parse(storedResults));
-      // Replace with the actual user ID
-      fetch(`http://localhost:8000/send_results/${userId}`)
-        .then(response => response.json())
-        .then(data => {
-          const adjustedResults = {
-            Extraversion: data.extraversion,
-            Agreeableness: data.agreeableness,
-            Conscientiousness: data.conscientiousness,
-            Neuroticism: data.neuroticism,
-            Openness: data.openness
-          };
-          // Save the results in the session storage for future use
-          sessionStorage.setItem('results', JSON.stringify(adjustedResults));
-          setResults(adjustedResults);
-        })
-        .catch(error => {
-          console.error('Error fetching data: ', error);
-        });
-    } else {
-      // If the results are not in the session storage, fetch them from the server
-      const userId = sessionStorage.getItem('user_id'); // Replace with the actual user ID
-      fetch(`http://localhost:8000/send_results/${userId}`)
-        .then(response => response.json())
-        .then(data => {
-          const adjustedResults = {
-            Extraversion: data.extraversion,
-            Agreeableness: data.agreeableness,
-            Conscientiousness: data.conscientiousness,
-            Neuroticism: data.neuroticism,
-            Openness: data.openness
-          };
-          // Save the results in the session storage for future use
-          sessionStorage.setItem('results', JSON.stringify(adjustedResults));
-          setResults(adjustedResults);
-        })
-        .catch(error => {
-          console.error('Error fetching data: ', error);
-        });
-    }
+
+    //if (!storedResults) {
+      Promise.all([
+        fetch(`http://localhost:8000/api/dual_assessment/${userId}`),
+        fetch(`http://localhost:8000/send_results/${userId}`)
+      ])
+      .then(async ([res1, res2]) => {
+        const data1 = await res1.json();
+        const data2 = await res2.json();
+    
+        setdualAssessment(data1.dual_assessment);
+        sessionStorage.setItem('dual_assessment',data1.dual_assessment);
+        //set results
+        const adjustedResults = {
+          Extraversion: data2.extraversion,
+          Agreeableness: data2.agreeableness,
+          Conscientiousness: data2.conscientiousness,
+          Neuroticism: data2.neuroticism,
+          Openness: data2.openness
+        };
+        setResults(adjustedResults);
+        sessionStorage.setItem('results', JSON.stringify(adjustedResults));
+
+      })
+      .catch(error => {
+        console.error('Error fetching data: ', error);
+      });
+
+      // Try to get the results from the session storage
+    //}
+    //else{
+      // setResults(JSON.parse(storedResults));
+      // setdualAssessment(sessionStorage.getItem('dual_assessment'));
+    //}
+
   }, []);
   
 
@@ -115,7 +97,7 @@ const PersonalityPage = () => {
     };
     
     const pageContent = (
-      <div className={`flex flex-col h-full p-10`}> 
+      <div className={`flex flex-col h-full p-10 space-y-10`}> 
       {dualAssessment ? null: <Alert severity="info">Current result is based on self assessmet.</Alert> }
       <div className={'flex flex-col  items-center'}  >
           <BasicTabs
