@@ -212,9 +212,29 @@ function RightPart() {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setEmailError('');
+        setPasswordError('');
+        setError('');
+
+        // Simple email validation
+        if (!email.includes('@')) {
+            setEmailError('Invalid email address');
+            return;
+        }
+
+        // Simple password length validation
+        if (password.length < 6) {
+            setPasswordError('Password must be at least 6 characters long');
+            return;
+        }
+
+
+
         try {
             const response = await axios.post('http://localhost:8000/login', { email, password });
             console.log(response.data); // Handle successful response

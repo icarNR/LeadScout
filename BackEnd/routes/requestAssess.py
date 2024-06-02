@@ -1,11 +1,14 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from crorSetting import setup_cors
+from fastapi import FastAPI,APIRouter
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from database.db import DatabaseConnection
+from models.company_model import SignupRequest
+from models.user_model import User, Results
 
-app = FastAPI()
+
+router = APIRouter()
 # Call the function to set up CORS
-setup_cors(app)
+
 
 class User(BaseModel):
     id: str
@@ -15,6 +18,20 @@ class User(BaseModel):
 class Supervisor(BaseModel):
     id: str
     notifications: list = []
+class LoginUser(BaseModel):
+    name: str
+    email: EmailStr
+    employee_id: str
+    hashed_password: str
+    
+login = {
+            "example": {
+                "name": "Test Company",
+                "email": "test@test.com",
+                "employee_id":"123K",
+                "hashed_password": "hashedpassword@1"
+            }
+        }
 
 users = {
     "001": {
@@ -43,13 +60,13 @@ supervisors = {
 
 
 # Get the number of attempts and  requested flag for a user
-@app.get("/api/users/{user_id}/attempts")
+@router.get("/api/users/{user_id}/attempts")
 async def get_attempts(user_id: str):
     user = users.get(user_id)
     return {"attempts": user["attempts"], "requested": user["requested"]}
 
 # Set the `requested` flag to `true` for a user & send notifications
-@app.post("/api/users/{user_id}/request")
+@router.post("/api/users/{user_id}/request")
 async def set_request(user_id: str):
     user = users.get(user_id)
     if user:
@@ -72,6 +89,26 @@ async def set_request(user_id: str):
         return {"success": False}
 
 
-@app.get("/get_supervisors/")
+@router.get("/get_supervisors/")
 async def get_supervisors():
     return supervisors
+
+@router.get("/get_users/{userId}/")
+async def get_users(userId: str):
+    db = DatabaseConnection("Users")
+    users = db.get_documents_by_attribute("supervisor", userId,["user_id","name"])
+    print(users)
+    return users
+
+# @router.post("/company")
+# async def get_company(company:Company):
+#     db=DatabaseConnection("Company")
+#     db.add_document(dict(company))
+#     return "Success"
+
+
+@router.post("/sign_up")
+async def get_login(login_user:SignupRequest):
+    db=DatabaseConnection("LoginUser")
+    return await db.create_user(login_user.employee_id,login_user.email,login_user.password)
+    # return "Success"

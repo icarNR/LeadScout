@@ -1,11 +1,14 @@
 from pymongo import MongoClient, errors
 import sys
+from models.company_model import LoginUser
 from models.user_model import User,Results
+from passlib.context import CryptContext
 from bson import ObjectId
 
 
 class DatabaseConnection:
     def __init__(self,collection_name):
+        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         try:
             # Replace the placeholder data with your actual Atlas connection string
             atlas_connection_string = "mongodb+srv://nisalRavindu:tonyStark#117@cluster0.wsf6jk3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -103,27 +106,29 @@ class DatabaseConnection:
                 print("No documents matched the filter.")
         except Exception as e:
             print("An error occurred while getting the attribute value: ", e)
+            
  
 
-# document_id = document = db.find_document_by_attribute(attribute, value)  # replace with your document's _id
-# value = db.get_attribute_value(document_id, attribute)
-answers=[2] * 44
-user = User(
-    user_id="001",
-    attempts=0,  # replace with actual number of attempts
-    supervisor="002",  # replace with actual supervisor if any
-    requested=False,  # replace with actual requested status
-    answers=answers,
-    results=Results(
-        Openness=0,
-        Conscientiousness=0,
-        Extraversion=0,
-        Agreeableness=0,
-        Neuroticism=0,
-    )
-)
-# db = DatabaseConnection("users")
-# db.update_document(db.find_document_by_attribute("user_id","001"), "answers", answers)
 
-# # Insert the User object into the MongoDB database
-# db.add_document(user.model_dump())
+
+
+ ##User-related operations
+    async def get_user(self, email: str) -> LoginUser:
+        """Get a user by their email."""
+        return  self.collection.find_one({"email": email})
+
+    async def create_user(self, employee_id: str, email: str, password: str) -> LoginUser:
+        """Create a new user with hashed password."""
+        hashed_password = self.pwd_context.hash(password)
+        user = {"employee_id": employee_id, "email": email, "hashed_password": hashed_password}
+        result =  self.collection.insert_one(user)
+        return LoginUser(**user, id=str(result.inserted_id))
+
+    async def authenticate_user(self, email: str, password: str) -> bool:
+        """Authenticate a user by email and password."""
+        user = await self.get_user(email)
+        if not user:
+            return False
+        if not self.pwd_context.verify(password, user["hashed_password"]):
+            return False
+        return LoginUser(**user)
