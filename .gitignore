@@ -1,1 +1,37 @@
-ECHO is on.
+# Ignore Python cache files
+*.pyc
+__pycache__/
+
+# Ignore virtual environments
+venv/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore build directories
+build/
+dist/
+
+# Ignore admin directory except for .gitkeep
+admin/*
+!admin/.gitkeep
+
+# Ignore other common IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+
+# Ignore npm package lock files if necessary
+package-lock.json
+yarn.lock
+
+# Ignore specific project files and directories (customize as needed)
+employee/
+*.jsx
+
+# Ignore FrontEnd specific build and dependency directories
+FrontEnd/build/
+FrontEnd/node_modules/
