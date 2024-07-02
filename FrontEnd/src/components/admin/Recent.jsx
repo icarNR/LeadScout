@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { FaClockRotateLeft } from "react-icons/fa6";
 import { GrPlug } from "react-icons/gr";
@@ -10,6 +9,23 @@ const Recent = () => {
         const recent = JSON.parse(sessionStorage.getItem('recentCriteria'));
         setRecentCriteria(recent);
     }, []);
+
+    const saveToRecentCriteria = () => {
+        if (recentCriteria) {
+            let criteriaUsage = JSON.parse(sessionStorage.getItem('criteriaUsage')) || {};
+
+            if (criteriaUsage[recentCriteria.id]) {
+                criteriaUsage[recentCriteria.id].count += 1;
+            } else {
+                criteriaUsage[recentCriteria.id] = { count: 1, criteria: recentCriteria };
+            }
+
+            sessionStorage.setItem('criteriaUsage', JSON.stringify(criteriaUsage));
+            sessionStorage.setItem('recentCriteria', JSON.stringify(recentCriteria));
+
+            alert(`Plugged in for criteria ID: ${recentCriteria.id}`);
+        }
+    };
 
     const pStyle = {
         border: '1px solid #ddd',
@@ -38,7 +54,7 @@ const Recent = () => {
                 {recentCriteria ? (
                     <div style={pStyle}>
                         {recentCriteria.name}
-                        <span><GrPlug /></span>
+                        <span onClick={saveToRecentCriteria} style={{ cursor: 'pointer' }}><GrPlug /></span>
                     </div>
                 ) : (
                     <div style={pStyle}>
@@ -51,4 +67,3 @@ const Recent = () => {
 }
 
 export default Recent;
-
