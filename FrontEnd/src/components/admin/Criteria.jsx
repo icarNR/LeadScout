@@ -1,18 +1,20 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { GrPlug } from 'react-icons/gr';
 import SearchBar from './SearchBar';
 
-const Criteria = ({ onSelect }) => {
+    
+const Criteria = ({ onSelect, department, searchTerm, sortByUsage }) => {
     const [criteriaData, setCriteriaData] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [plugMessage, setPlugMessage] = useState('');
-    const [department, setDepartment] = useState('All Departments');
-    const [sortByUsage, setSortByUsage] = useState(false);
     const [sortedCriteria, setSortedCriteria] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const [showAllCriteria, setShowAllCriteria] = useState(true);
-    const departments = ['All Departments', 'it', 'HR', 'management'];
+
+    // useEffect(() => {
+    //     console.log("Selected Department in EmployeeCriteria:", department);
+    //     console.log("Search Value in EmployeeCriteria:", searchTerm);
+    //     console.log("Most Used Clicked in EmployeeCriteria:", sortByUsage);
+    // }, [department, searchTerm, sortByUsage])
 
     useEffect(() => {
         fetchData();
@@ -34,7 +36,7 @@ const Criteria = ({ onSelect }) => {
 
     const fetchData = async () => {
         try {
-            const url = department && department !== 'All Departments'
+            const url = department && department !== 'All'
                 ? `http://localhost:8000/criteriafilter?department=${department}`
                 : 'http://localhost:8000/criteriafilter';
             const response = await fetch(url);
@@ -74,22 +76,24 @@ const Criteria = ({ onSelect }) => {
         setTimeout(() => setPlugMessage(''), 2000);
     };
 
-    const handleSortByUsage = () => {
-        setSortByUsage(prev => !prev);
-    };
-
-    const handleSearch = (id) => {
-        if (id.trim() === '') {
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
             setShowAllCriteria(true);
         } else {
-            const filteredCriteria = criteriaData.filter(criteria => criteria.id.toString() === id.trim());
-            setCriteriaData(filteredCriteria);
-            setShowAllCriteria(false);
+            try {
+                const regex = new RegExp(searchTerm.trim(), 'i');
+                const filteredCriteria = criteriaData.filter(criteria => regex.test(criteria.id.trim()));
+                setCriteriaData(filteredCriteria);
+                setShowAllCriteria(false);
+            } catch (e) {
+                console.error("Invalid regex pattern", e);
+                setCriteriaData([]); 
+                setShowAllCriteria(false);
+            }
         }
-    };
-
+    }, [searchTerm]);
+    
     const handleShowAllCriteria = () => {
-        setSearchTerm('');
         setShowAllCriteria(true);
         fetchData();
     };
@@ -97,27 +101,10 @@ const Criteria = ({ onSelect }) => {
     return (
         <div style={{ width: '100%', padding: '20px' }}>
             {plugMessage && <p>{plugMessage}</p>}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <select value={department} onChange={(e) => setDepartment(e.target.value)} style={{ backgroundColor: 'rgb(37, 150, 190)', color: 'white', padding: '5px', borderRadius: '5px', border: 'none', marginRight: '10px', cursor: 'pointer' }}>
-                        {departments.map((dep, index) => (
-                            <option key={index} value={dep}>
-                                {dep}
-                            </option>
-                        ))}
-                    </select>
-                    <button onClick={handleSortByUsage} style={{ backgroundColor: 'rgb(37, 150, 190)', color: 'white', padding: '8px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}>
-                        {sortByUsage ? 'Show All Criteria' : 'Most Used Criteria'}
-                    </button>
-                </div>
-                <div style={{ marginLeft: '10px' }}>
-                    <SearchBar onSearch={handleSearch} />
-                </div>
-            </div>
 
-            <div style={{ maxHeight: '500px', overflowY: 'auto', display: 'block' }}>
+            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px' }}>
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
                         <tr style={{ borderBottom: '2px solid #ddd' }}>
                             <th style={{ textAlign: 'left', padding: '10px', width: '10%' }}>Id</th>
                             <th style={{ textAlign: 'left', padding: '10px', width: '50%' }}>Name</th>
