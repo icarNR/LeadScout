@@ -1,13 +1,9 @@
-
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 from pymongo import MongoClient
-from bson import ObjectId
 from pydantic import BaseModel
 from typing import List, Optional
-from crorSetting import setup_cors
 
-app = FastAPI()
-setup_cors(app)
+router = APIRouter()
 
 # MongoDB connection details
 MONGO_URI = "mongodb://localhost:27017"
@@ -42,22 +38,22 @@ def skill_helper(skill) -> dict:
         "score": skill["score"],
     }
 
-#Routes for Criteria
-@app.get("/criteria", response_model=List[Criteria])
+# Routes for Criteria
+@router.get("/criteria", response_model=List[Criteria])
 async def get_criteria():
     criteria_list = []
     for criteria in users_collection.find():
         criteria_list.append(criteria_helper(criteria))
     return criteria_list
 
-@app.get("/criteria/{criteria_id}", response_model=Criteria)
+@router.get("/criteria/{criteria_id}", response_model=Criteria)
 async def get_criteria_by_id(criteria_id: str):
     criteria = users_collection.find_one({"id": criteria_id})
     if criteria:
         return criteria_helper(criteria)
     raise HTTPException(status_code=404, detail=f"Criteria with id {criteria_id} not found")
 
-@app.get("/criteriafilter", response_model=List[Criteria])
+@router.get("/criteriafilter", response_model=List[Criteria])
 async def get_criteria_filter(
     department: Optional[str] = Query(None, description="Filter criteria by department"),
     search_id: Optional[str] = Query(None, description="Search criteria by ID")
@@ -74,14 +70,14 @@ async def get_criteria_filter(
     return criteria_list
 
 # Routes for Skills
-@app.get("/skills", response_model=List[Skill])
+@router.get("/skills", response_model=List[Skill])
 async def get_skills():
     skills = []
     for skill in skills_collection.find():
         skills.append(skill_helper(skill))
     return skills
 
-@app.get("/skills/{criteria_id}", response_model=List[Skill])
+@router.get("/skills/{criteria_id}", response_model=List[Skill])
 async def get_skills_by_criteria(criteria_id: int):
     skills = []
     for skill in skills_collection.find({"criteria_id": criteria_id}):
@@ -91,6 +87,6 @@ async def get_skills_by_criteria(criteria_id: int):
     return skills
 
 # Root welcome message
-@app.get("/")
+@router.get("/")
 async def read_root():
     return {"message": "Welcome to the combined Criteria and Skills API!"}
